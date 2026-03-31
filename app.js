@@ -417,6 +417,11 @@ function renderVehicles() {
     const activeDrivers = drivers.filter(d => d.status === 'ATIVO');
 
     list.innerHTML = filtered.map(v => {
+        setTimeout(() => {
+            document.querySelectorAll('.direct-select').forEach(select => {
+                applySelectColor(select);
+            });
+        }, 0);
         const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
         const currentSpecial = specialStatus[v.id];
         let options = '<option value="">-- Vincular Motorista --</option>';
@@ -435,7 +440,7 @@ function renderVehicles() {
             switch (col.key) {
                 case 'placa': return `<td><span class="plate">${v.placa}</span></td>`;
                 case 'modelo': return `<td>${v.modelo}</td>`;
-                case 'condutor': const selectClass = getSelectClass(v.condutor_principal_id, currentSpecial); return `<td><select class="direct-select ${selectClass}" ${isAdmin ? '' : 'disabled'} onchange="updateVehicleDriver('${v.id}', this.value)">${options}</select></td>`;
+                case 'condutor': const selectClass = getSelectClass(v.condutor_principal_id, currentSpecial); return `<td><select class="direct-select ${selectClass}" ${isAdmin ? '' : 'disabled'} onchange="updateVehicleDriver('${v.id}', this.value); applySelectColor(this);">${options}</select></td>`;
                 case 'whats':
                     if (v.motoristas && v.motoristas.contato_whatsapp) {
                         const raw = v.motoristas.contato_whatsapp;
@@ -1147,5 +1152,19 @@ function getSelectClass(value, specialStatus) {
             return 'select-disponivel';
         default:
             return 'select-default';
+    }
+}
+
+function applySelectColor(select) {
+    const value = select.value;
+
+    if (value === 'garagem') {
+        select.style.color = '#007bff';
+    } else if (value === 'manutencao') {
+        select.style.color = '#dc3545';
+    } else if (value === 'disponivel') {
+        select.style.color = '#28a745';
+    } else {
+        select.style.color = '#6c757d';
     }
 }
