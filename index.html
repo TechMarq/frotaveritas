@@ -61,6 +61,9 @@
             <div class="search-box">
                 <i data-lucide="search"></i>
                 <input type="text" id="searchInput" placeholder="Buscar em tempo real...">
+                <button id="clearSearch" class="clear-btn" onclick="clearSearch()">
+                    ✕
+                </button>
             </div>
 
             <div class="admin-actions">
@@ -72,7 +75,7 @@
                 <button class="btn btn-primary btn-add" onclick="openAddModal()">
                     <i data-lucide="plus-circle"></i> Novo Veículo
                 </button>
-                <button class="btn btn-secondary btn-add" onclick="openDriverModal()" 
+                <button class="btn btn-secondary btn-add" onclick="openDriverModal()"
                     style="border: 1px solid var(--border-card);">
                     <i data-lucide="user-plus"></i> Novo Motorista
                 </button>
@@ -86,7 +89,8 @@
                 </button>
             </div>
             <div id="colPanel-dashboard" class="col-panel" style="display:none;">
-                <p class="col-panel-hint"><i data-lucide="grip-vertical" style="width:12px;"></i> Arraste para reordenar &bull; Clique no olho para mostrar/ocultar</p>
+                <p class="col-panel-hint"><i data-lucide="grip-vertical" style="width:12px;"></i> Arraste para reordenar
+                    &bull; Clique no olho para mostrar/ocultar</p>
                 <div id="colList-dashboard" class="col-list"></div>
                 <div class="col-panel-actions">
                     <button class="btn-col-reset" onclick="resetColumns('dashboard')">Redefinir padrão</button>
@@ -94,32 +98,41 @@
             </div>
             <div class="table-container">
                 <table>
-                    <thead id="thead-dashboard"><tr></tr></thead>
+                    <thead id="thead-dashboard">
+                        <tr></tr>
+                    </thead>
                     <tbody id="vehicleList">
-                        <tr><td colspan="4" style="text-align: center; padding: 3rem;">Carregando alocações...</td></tr>
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 3rem;">Carregando alocações...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div id="vehiclesView" class="view-section">
-            <div class="view-header-actions" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; align-items: center;">
+            <div class="view-header-actions"
+                style="margin-bottom: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; align-items: center;">
                 <button class="btn-col-config" onclick="toggleColPanel('vehicles')">
                     <i data-lucide="settings-2" style="width:14px;"></i> Colunas
                 </button>
-                <button class="btn" onclick="exportFleetToExcel()" style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); font-size: 0.8rem;">
-                    <i data-lucide="file-spreadsheet" style="width: 14px;"></i> Excel 
+                <button class="btn" onclick="exportFleetToExcel()"
+                    style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); font-size: 0.8rem;">
+                    <i data-lucide="file-spreadsheet" style="width: 14px;"></i> Excel
                 </button>
-                <button class="btn" onclick="exportFleetToPDF()" style="padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.8rem;">
+                <button class="btn" onclick="exportFleetToPDF()"
+                    style="padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.8rem;">
                     <i data-lucide="file-text" style="width: 14px;"></i> PDF
                 </button>
-                <button class="btn btn-primary" id="btnImport" onclick="document.getElementById('importExcel').click()" style="padding: 0.5rem 1rem; font-size: 0.8rem; display: none;">
+                <button class="btn btn-primary" id="btnImport" onclick="document.getElementById('importExcel').click()"
+                    style="padding: 0.5rem 1rem; font-size: 0.8rem; display: none;">
                     <i data-lucide="upload-cloud" style="width: 14px;"></i> Importar Excel
                 </button>
                 <input type="file" id="importExcel" hidden accept=".xlsx, .xls" onchange="importFleetFromExcel(this)">
             </div>
             <div id="colPanel-vehicles" class="col-panel" style="display:none; margin-bottom: 1rem;">
-                <p class="col-panel-hint"><i data-lucide="grip-vertical" style="width:12px;"></i> Arraste para reordenar &bull; Clique no olho para mostrar/ocultar</p>
+                <p class="col-panel-hint"><i data-lucide="grip-vertical" style="width:12px;"></i> Arraste para reordenar
+                    &bull; Clique no olho para mostrar/ocultar</p>
                 <div id="colList-vehicles" class="col-list"></div>
                 <div class="col-panel-actions">
                     <button class="btn-col-reset" onclick="resetColumns('vehicles')">Redefinir padrão</button>
@@ -127,28 +140,36 @@
             </div>
             <div class="table-container">
                 <table>
-                    <thead id="thead-vehicles"><tr></tr></thead>
+                    <thead id="thead-vehicles">
+                        <tr></tr>
+                    </thead>
                     <tbody id="fullVehicleList">
-                        <tr><td colspan="5" style="text-align: center; padding: 3rem;">Carregando frota...</td></tr>
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 3rem;">Carregando frota...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
         <div id="driversView" class="view-section">
-            <div class="view-header-actions" style="margin-bottom: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; align-items: center;">
+            <div class="view-header-actions"
+                style="margin-bottom: 1rem; display: flex; gap: 0.5rem; justify-content: flex-end; flex-wrap: wrap; align-items: center;">
                 <button class="btn-col-config" onclick="toggleColPanel('drivers')">
                     <i data-lucide="settings-2" style="width:14px;"></i> Colunas
                 </button>
-                <button class="btn" onclick="exportDriversToExcel()" style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); font-size: 0.8rem;">
+                <button class="btn" onclick="exportDriversToExcel()"
+                    style="padding: 0.5rem 1rem; background: rgba(16, 185, 129, 0.1); color: var(--success); border: 1px solid rgba(16, 185, 129, 0.2); font-size: 0.8rem;">
                     <i data-lucide="file-spreadsheet" style="width: 14px;"></i> Excel
                 </button>
-                <button class="btn" onclick="exportDriversToPDF()" style="padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.8rem;">
+                <button class="btn" onclick="exportDriversToPDF()"
+                    style="padding: 0.5rem 1rem; background: rgba(239, 68, 68, 0.1); color: var(--danger); border: 1px solid rgba(239, 68, 68, 0.2); font-size: 0.8rem;">
                     <i data-lucide="file-text" style="width: 14px;"></i> PDF
                 </button>
             </div>
             <div id="colPanel-drivers" class="col-panel" style="display:none;">
-                <p class="col-panel-hint"><i data-lucide="grip-vertical" style="width:12px;"></i> Arraste para reordenar &bull; Clique no olho para mostrar/ocultar</p>
+                <p class="col-panel-hint"><i data-lucide="grip-vertical" style="width:12px;"></i> Arraste para reordenar
+                    &bull; Clique no olho para mostrar/ocultar</p>
                 <div id="colList-drivers" class="col-list"></div>
                 <div class="col-panel-actions">
                     <button class="btn-col-reset" onclick="resetColumns('drivers')">Redefinir padrão</button>
@@ -156,9 +177,13 @@
             </div>
             <div class="table-container">
                 <table>
-                    <thead id="thead-drivers"><tr></tr></thead>
+                    <thead id="thead-drivers">
+                        <tr></tr>
+                    </thead>
                     <tbody id="fullDriverList">
-                        <tr><td colspan="6" style="text-align: center; padding: 3rem;">Carregando equipe...</td></tr>
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 3rem;">Carregando equipe...</td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -171,6 +196,7 @@
             <form id="addForm">
                 <input type="hidden" id="addVehicleId">
                 <div class="form-grid">
+
                     <!-- Basic Info -->
                     <div class="form-section-header">Identificação do Veículo</div>
                     <div class="form-group">
@@ -188,10 +214,86 @@
                     <div class="form-group">
                         <label>Classificação</label>
                         <select id="addClassificacao">
-                            <option value="CASA">CASA</option>
-                            <option value="VENDIDO">VENDIDO</option>
-                            <option value="BO">BO</option>
+                            <option value="PROPRIO">PRÓPRIO</option>
+                            <option value="TERCEIRO">TERCEIRO</option>
+                            <option value="ALUGADO">ALUGADO</option>
+                            <option value="DIRETORIA">DIRETORIA</option>
+                            <option value="ESPECIAL">ESPECIAL</option>
+                            <option value="OUTRO">OUTRO</option>
                         </select>
+                    </div>
+
+                    <!-- Técnico -->
+                    <div class="form-section-header">Detalhamento Técnico</div>
+                    <div class="form-group">
+                        <label>Chassi</label>
+                        <input type="text" id="addChassi">
+                    </div>
+                    <div class="form-group">
+                        <label>Nº Motor</label>
+                        <input type="text" id="addNumeroMotor">
+                    </div>
+                    <div class="form-group">
+                        <label>Ano Fabricação</label>
+                        <input type="number" id="addAnoFabricacao">
+                    </div>
+                    <div class="form-group">
+                        <label>Ano Modelo</label>
+                        <input type="number" id="addAnoModelo">
+                    </div>
+                    <div class="form-group">
+                        <label>Marca</label>
+                        <select id="addMarca">
+                            <option value="VW">Volkswagen</option>
+                            <option value="FIAT">Fiat</option>
+                            <option value="GM">Chevrolet</option>
+                            <option value="FORD">Ford</option>
+                            <option value="TOYOTA">Toyota</option>
+                            <option value="HONDA">Honda</option>
+                            <option value="HYUNDAI">Hyundai</option>
+                            <option value="JEEP">Jeep</option>
+                            <option value="RENAULT">Renault</option>
+                            <option value="NISSAN">Nissan</option>
+                            <option value="MERCEDES-BENZ">Mercedes-Benz</option>
+                            <option value="BMW">BMW</option>
+                            <option value="BYD">BYD</option>
+                            <option value="OUTRO">Outra</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Modelo</label>
+                        <input type="text" id="addModelo">
+                    </div>
+                    <div class="form-group">
+                        <label>Cor</label>
+                        <select id="addCor">
+                            <option value="BRANCO">Branco</option>
+                            <option value="PRETO">Preto</option>
+                            <option value="CINZA">Cinza</option>
+                            <option value="PRATA">Prata</option>
+                            <option value="VERMELHO">Vermelho</option>
+                            <option value="AZUL">Azul</option>
+                            <option value="OUTRA">Outra</option>
+                        </select>
+                    </div>
+
+                    <!-- Documentos Ext -->
+                    <div class="form-section-header">Documentação & FIPE</div>
+                    <div class="form-group">
+                        <label>Nome no Documento</label>
+                        <input type="text" id="addNomeDocumento">
+                    </div>
+                    <div class="form-group">
+                        <label>CPF / CNPJ</label>
+                        <input type="text" id="addCpfCnpj">
+                    </div>
+                    <div class="form-group">
+                        <label>Código FIPE</label>
+                        <input type="text" id="addCodigoFipe">
+                    </div>
+                    <div class="form-group">
+                        <label>Valor FIPE Mês</label>
+                        <input type="number" step="0.01" id="addValorFipeMes">
                     </div>
 
                     <!-- Seguro -->
@@ -253,76 +355,6 @@
                     <div class="form-group">
                         <label>Cálculo Valor por Dia (Automático)</label>
                         <input type="text" id="addValorDiaSeguro" disabled placeholder="R$ 0,00">
-                    </div>
-
-                    <!-- Documentos Ext -->
-                    <div class="form-section-header">Documentação & FIPE</div>
-                    <div class="form-group">
-                        <label>Nome no Documento</label>
-                        <input type="text" id="addNomeDocumento">
-                    </div>
-                    <div class="form-group">
-                        <label>CPF / CNPJ</label>
-                        <input type="text" id="addCpfCnpj">
-                    </div>
-                    <div class="form-group">
-                        <label>Código FIPE</label>
-                        <input type="text" id="addCodigoFipe">
-                    </div>
-                    <div class="form-group">
-                        <label>Valor FIPE Mês</label>
-                        <input type="number" step="0.01" id="addValorFipeMes">
-                    </div>
-
-                    <!-- Técnico -->
-                    <div class="form-section-header">Detalhamento Técnico</div>
-                    <div class="form-group">
-                        <label>Chassi</label>
-                        <input type="text" id="addChassi">
-                    </div>
-                    <div class="form-group">
-                        <label>Nº Motor</label>
-                        <input type="text" id="addNumeroMotor">
-                    </div>
-                    <div class="form-group">
-                        <label>Ano Fabricação</label>
-                        <input type="number" id="addAnoFabricacao">
-                    </div>
-                    <div class="form-group">
-                        <label>Ano Modelo</label>
-                        <input type="number" id="addAnoModelo">
-                    </div>
-                    <div class="form-group">
-                        <label>Marca</label>
-                        <select id="addMarca">
-                            <option value="VW">Volkswagen</option>
-                            <option value="FIAT">Fiat</option>
-                            <option value="GM">Chevrolet</option>
-                            <option value="FORD">Ford</option>
-                            <option value="TOYOTA">Toyota</option>
-                            <option value="HONDA">Honda</option>
-                            <option value="HYUNDAI">Hyundai</option>
-                            <option value="JEEP">Jeep</option>
-                            <option value="RENAULT">Renault</option>
-                            <option value="NISSAN">Nissan</option>
-                            <option value="OUTRO">Outra</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Modelo</label>
-                        <input type="text" id="addModelo">
-                    </div>
-                    <div class="form-group">
-                        <label>Cor</label>
-                        <select id="addCor">
-                            <option value="BRANCO">Branco</option>
-                            <option value="PRETO">Preto</option>
-                            <option value="CINZA">Cinza</option>
-                            <option value="PRATA">Prata</option>
-                            <option value="VERMELHO">Vermelho</option>
-                            <option value="AZUL">Azul</option>
-                            <option value="OUTRA">Outra</option>
-                        </select>
                     </div>
 
                     <!-- Aquisição -->
@@ -427,7 +459,8 @@
 
                 <div class="form-group">
                     <label>Veículo / Placa</label>
-                    <input type="text" id="editPlaca" disabled style="opacity: 0.6; font-weight: 700; color: var(--primary);">
+                    <input type="text" id="editPlaca" disabled
+                        style="opacity: 0.6; font-weight: 700; color: var(--primary);">
                 </div>
 
                 <div class="form-group">
@@ -468,6 +501,22 @@
                 <button class="detail-close-btn" onclick="closeDriverDetail()">&times;</button>
             </div>
             <div id="driverDetailContent" class="detail-grid"></div>
+        </div>
+    </div>
+
+    <!-- ============================= -->
+    <!-- 📌 MODAL DE DETALHES (GLOBAL) -->
+    <!-- ============================= -->
+    <div id="modalOverlay" class="modal-overlay" onclick="closeModal()">
+
+        <div class="modal-content" onclick="event.stopPropagation()">
+
+            <!-- 🔘 Botão fechar -->
+            <span class="modal-close" onclick="closeModal()">✕</span>
+
+            <!-- 📄 Conteúdo dinâmico -->
+            <div id="modalBody"></div>
+
         </div>
     </div>
 

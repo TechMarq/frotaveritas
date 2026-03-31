@@ -1,3 +1,5 @@
+const ADMIN_PASSWORD = "M@nu2398";
+
 // --- Configuração Supabase ---
 const SUPABASE_URL = 'https://ffgwqsrfmmcqwjjkbrsq.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZmZ3dxc3JmbW1jcXdqamticnNxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ0NDA3MDEsImV4cCI6MjA5MDAxNjcwMX0.bLHIvQENAcGZ0i0zk85oW7NPvGuMtJey7RqzORcqf0U';
@@ -42,42 +44,43 @@ let isAdmin = false;
 
 const COL_DEFS = {
     dashboard: [
-        { key: 'placa',    label: 'Placa',          visible: true },
-        { key: 'modelo',   label: 'Modelo',         visible: true },
-        { key: 'condutor', label: 'Condutor Atual',  visible: true },
-        { key: 'whats',    label: 'WhatsApp',        visible: true },
+        { key: 'placa', label: 'Placa', visible: true },
+        { key: 'modelo', label: 'Modelo', visible: true },
+        { key: 'condutor', label: 'Condutor Atual', visible: true },
+        { key: 'whats', label: 'WhatsApp', visible: true },
     ],
     vehicles: [
-        { key: 'placa',          label: 'Placa',          visible: true },
-        { key: 'marca_modelo',   label: 'Marca/Modelo',   visible: true },
-        { key: 'proprietario',   label: 'Proprietário',   visible: true },
-        { key: 'venc_seguro',    label: 'Venc. Seguro',   visible: true },
-        { key: 'seguradora',     label: 'Seguradora',     visible: false },
-        { key: 'numero_apolice', label: 'Nº Apólice',     visible: false },
-        { key: 'valor_premio',   label: 'Valor Prêmio',   visible: false },
-        { key: 'valor_franquia', label: 'Valor Franquia',  visible: false },
-        { key: 'forma_pagamento',label: 'Forma Pgto.',    visible: false },
-        { key: 'classificacao',  label: 'Classificação',  visible: false },
-        { key: 'status',         label: 'Status',         visible: false },
-        { key: 'cor',            label: 'Cor',            visible: false },
-        { key: 'ano_fabricacao', label: 'Ano Fab.',       visible: false },
-        { key: 'ano_modelo',     label: 'Ano Modelo',     visible: false },
-        { key: 'renavam',        label: 'RENAVAM',        visible: false },
-        { key: 'chassi',         label: 'Chassi',         visible: false },
-        { key: 'codigo_fipe',    label: 'Cód. FIPE',      visible: false },
+        { key: 'placa', label: 'Placa', visible: true },
+        { key: 'marca_modelo', label: 'Marca/Modelo', visible: true },
+        { key: 'proprietario', label: 'Proprietário', visible: true },
+        { key: 'venc_seguro', label: 'Venc. Seguro', visible: true },
+        { key: 'seguradora', label: 'Seguradora', visible: false },
+        { key: 'numero_apolice', label: 'Nº Apólice', visible: false },
+        { key: 'valor_premio', label: 'Valor Prêmio', visible: false },
+        { key: 'valor_franquia', label: 'Valor Franquia', visible: false },
+        { key: 'forma_pagamento', label: 'Forma Pgto.', visible: false },
+        { key: 'corretor_seguro', label: 'Corretor', visible: false },
+        { key: 'classificacao', label: 'Classificação', visible: false },
+        { key: 'status', label: 'Status', visible: false },
+        { key: 'cor', label: 'Cor', visible: false },
+        { key: 'ano_fabricacao', label: 'Ano Fab.', visible: false },
+        { key: 'ano_modelo', label: 'Ano Modelo', visible: false },
+        { key: 'renavam', label: 'RENAVAM', visible: false },
+        { key: 'chassi', label: 'Chassi', visible: false },
+        { key: 'codigo_fipe', label: 'Cód. FIPE', visible: false },
         { key: 'data_aquisicao_nf', label: 'Dt. Aquisição', visible: false },
-        { key: 'actions',        label: 'Ações',          visible: true  },
+        { key: 'actions', label: 'Ações', visible: true },
     ],
     drivers: [
-        { key: 'nome_completo',  label: 'Nome Completo',  visible: true },
-        { key: 'cpf',            label: 'CPF',            visible: true },
-        { key: 'cnh_cat',        label: 'CNH / Categoria',visible: true },
+        { key: 'nome_completo', label: 'Nome Completo', visible: true },
+        { key: 'cpf', label: 'CPF', visible: true },
+        { key: 'cnh_cat', label: 'CNH / Categoria', visible: true },
         { key: 'vencimento_cnh', label: 'Vencimento CNH', visible: true },
-        { key: 'idade',          label: 'Idade',          visible: true  },
-        { key: 'contato_whatsapp', label: 'WhatsApp',     visible: false },
-        { key: 'data_nascimento',  label: 'Nascimento',   visible: false },
-        { key: 'status',          label: 'Status',        visible: true  },
-        { key: 'actions',         label: 'Ações',         visible: true  },
+        { key: 'idade', label: 'Idade', visible: true },
+        { key: 'contato_whatsapp', label: 'WhatsApp', visible: false },
+        { key: 'data_nascimento', label: 'Nascimento', visible: false },
+        { key: 'status', label: 'Status', visible: true },
+        { key: 'actions', label: 'Ações', visible: true },
     ],
 };
 
@@ -160,42 +163,42 @@ function resetColumns(tab) {
     // Re-read from the original defaults
     const origDefs = {
         dashboard: [
-            { key: 'placa',    label: 'Placa',          visible: true },
-            { key: 'modelo',   label: 'Modelo',         visible: true },
-            { key: 'condutor', label: 'Condutor Atual',  visible: true },
-            { key: 'whats',    label: 'WhatsApp',        visible: true },
+            { key: 'placa', label: 'Placa', visible: true },
+            { key: 'modelo', label: 'Modelo', visible: true },
+            { key: 'condutor', label: 'Condutor Atual', visible: true },
+            { key: 'whats', label: 'WhatsApp', visible: true },
         ],
         vehicles: [
-            { key: 'placa',          label: 'Placa',          visible: true },
-            { key: 'marca_modelo',   label: 'Marca/Modelo',   visible: true },
-            { key: 'proprietario',   label: 'Proprietário',   visible: true },
-            { key: 'venc_seguro',    label: 'Venc. Seguro',   visible: true },
-            { key: 'seguradora',     label: 'Seguradora',     visible: false },
-            { key: 'numero_apolice', label: 'Nº Apólice',     visible: false },
-            { key: 'valor_premio',   label: 'Valor Prêmio',   visible: false },
-            { key: 'valor_franquia', label: 'Valor Franquia',  visible: false },
-            { key: 'forma_pagamento',label: 'Forma Pgto.',    visible: false },
-            { key: 'classificacao',  label: 'Classificação',  visible: false },
-            { key: 'status',         label: 'Status',         visible: false },
-            { key: 'cor',            label: 'Cor',            visible: false },
-            { key: 'ano_fabricacao', label: 'Ano Fab.',       visible: false },
-            { key: 'ano_modelo',     label: 'Ano Modelo',     visible: false },
-            { key: 'renavam',        label: 'RENAVAM',        visible: false },
-            { key: 'chassi',         label: 'Chassi',         visible: false },
-            { key: 'codigo_fipe',    label: 'Cód. FIPE',      visible: false },
+            { key: 'placa', label: 'Placa', visible: true },
+            { key: 'marca_modelo', label: 'Marca/Modelo', visible: true },
+            { key: 'proprietario', label: 'Proprietário', visible: true },
+            { key: 'venc_seguro', label: 'Venc. Seguro', visible: true },
+            { key: 'seguradora', label: 'Seguradora', visible: false },
+            { key: 'numero_apolice', label: 'Nº Apólice', visible: false },
+            { key: 'valor_premio', label: 'Valor Prêmio', visible: false },
+            { key: 'valor_franquia', label: 'Valor Franquia', visible: false },
+            { key: 'forma_pagamento', label: 'Forma Pgto.', visible: false },
+            { key: 'classificacao', label: 'Classificação', visible: false },
+            { key: 'status', label: 'Status', visible: false },
+            { key: 'cor', label: 'Cor', visible: false },
+            { key: 'ano_fabricacao', label: 'Ano Fab.', visible: false },
+            { key: 'ano_modelo', label: 'Ano Modelo', visible: false },
+            { key: 'renavam', label: 'RENAVAM', visible: false },
+            { key: 'chassi', label: 'Chassi', visible: false },
+            { key: 'codigo_fipe', label: 'Cód. FIPE', visible: false },
             { key: 'data_aquisicao_nf', label: 'Dt. Aquisição', visible: false },
-            { key: 'actions',        label: 'Ações',          visible: true  },
+            { key: 'actions', label: 'Ações', visible: true },
         ],
         drivers: [
-            { key: 'nome_completo',  label: 'Nome Completo',  visible: true },
-            { key: 'cpf',            label: 'CPF',            visible: true },
-            { key: 'cnh_cat',        label: 'CNH / Categoria',visible: true },
+            { key: 'nome_completo', label: 'Nome Completo', visible: true },
+            { key: 'cpf', label: 'CPF', visible: true },
+            { key: 'cnh_cat', label: 'CNH / Categoria', visible: true },
             { key: 'vencimento_cnh', label: 'Vencimento CNH', visible: true },
-            { key: 'idade',          label: 'Idade',          visible: true  },
-            { key: 'contato_whatsapp', label: 'WhatsApp',     visible: false },
-            { key: 'data_nascimento',  label: 'Nascimento',   visible: false },
-            { key: 'status',          label: 'Status',        visible: true  },
-            { key: 'actions',         label: 'Ações',         visible: true  },
+            { key: 'idade', label: 'Idade', visible: true },
+            { key: 'contato_whatsapp', label: 'WhatsApp', visible: false },
+            { key: 'data_nascimento', label: 'Nascimento', visible: false },
+            { key: 'status', label: 'Status', visible: true },
+            { key: 'actions', label: 'Ações', visible: true },
         ],
     };
     COL_DEFS[tab] = origDefs[tab];
@@ -261,10 +264,27 @@ function renderThead(tab) {
 // --- Funções de UI ---
 
 function toggleAdminMode() {
-    isAdmin = !isAdmin;
-    adminToggle.classList.toggle('active');
-    document.body.classList.toggle('admin-active');
-    renderAll();
+
+    // 👉 Se já está ativo, desativa direto (sem senha)
+    if (isAdmin) {
+        isAdmin = false;
+        adminToggle.classList.remove('active');
+        document.body.classList.remove('admin-active');
+        renderAll();
+        return;
+    }
+
+    // 👉 Se NÃO está ativo, pede senha
+    const senha = prompt("🔐 Digite a senha de administrador:");
+
+    if (senha === ADMIN_PASSWORD) {
+        isAdmin = true;
+        adminToggle.classList.add('active');
+        document.body.classList.add('admin-active');
+        renderAll();
+    } else {
+        alert("❌ Senha incorreta!");
+    }
 }
 
 function switchView(viewName) {
@@ -294,7 +314,7 @@ function formatDate(dateStr) {
         const [year, month, day] = dateStr.split('-');
         if (!day) return dateStr; // Caso não seja no formato YYYY-MM-DD
         return `${day}/${month}/${year}`;
-    } catch(e) {
+    } catch (e) {
         return dateStr;
     }
 }
@@ -314,7 +334,7 @@ function openEditModal(id) {
     const select = document.getElementById('editMotoristaSelect');
     if (select) {
         let options = '<option value="">Desvincular (Nenhum)</option>';
-        
+
         drivers.forEach(d => {
             const isOccupied = occupiedDriverIds.includes(d.id);
             if (!isOccupied) {
@@ -397,7 +417,12 @@ function renderVehicles() {
     const activeDrivers = drivers.filter(d => d.status === 'ATIVO');
 
     list.innerHTML = filtered.map(v => {
+        const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
+        const currentSpecial = specialStatus[v.id];
         let options = '<option value="">-- Vincular Motorista --</option>';
+        options += `<option value="MANUTENCAO" ${currentSpecial === 'MANUTENCAO' ? 'selected' : ''}>Manutenção</option>`;
+        options += `<option value="GARAGEM" ${currentSpecial === 'GARAGEM' ? 'selected' : ''}>Garagem</option>`;
+        options += `<option value="DISPONIVEL" ${currentSpecial === 'DISPONIVEL' ? 'selected' : ''}>Disponível</option>`;
         activeDrivers.forEach(d => {
             const isOccupiedByAnother = occupiedDriverIds.includes(d.id) && d.id !== v.condutor_principal_id;
             if (!isOccupiedByAnother) {
@@ -407,12 +432,27 @@ function renderVehicles() {
         });
 
         const cells = activeCols.map(col => {
-            switch(col.key) {
-                case 'placa':    return `<td><span class="plate">${v.placa}</span></td>`;
-                case 'modelo':   return `<td>${v.modelo}</td>`;
-                case 'condutor': return `<td><select class="direct-select" ${isAdmin ? '' : 'disabled'} onchange="updateVehicleDriver('${v.id}', this.value)">${options}</select></td>`;
-                case 'whats':    return `<td class="contact">${v.motoristas ? (v.motoristas.contato_whatsapp || '-') : '-'}</td>`;
-                default:         return `<td>-</td>`;
+            switch (col.key) {
+                case 'placa': return `<td><span class="plate">${v.placa}</span></td>`;
+                case 'modelo': return `<td>${v.modelo}</td>`;
+                case 'condutor': const selectClass = getSelectClass(v.condutor_principal_id, currentSpecial); return `<td><select class="direct-select ${selectClass}" ${isAdmin ? '' : 'disabled'} onchange="updateVehicleDriver('${v.id}', this.value)">${options}</select></td>`;
+                case 'whats':
+                    if (v.motoristas && v.motoristas.contato_whatsapp) {
+                        const raw = v.motoristas.contato_whatsapp;
+
+                        // limpa o número (remove tudo que não for número)
+                        const number = raw.replace(/\D/g, '');
+
+                        return `
+            <td class="contact">
+                <a href="https://wa.me/${number}" target="_blank">
+                    ${raw}
+                </a>
+            </td>
+        `;
+                    } else {
+                        return `<td class="contact">-</td>`;
+                    }
             }
         }).join('');
 
@@ -422,8 +462,29 @@ function renderVehicles() {
 
 async function updateVehicleDriver(vehicleId, driverId) {
     if (!client) return;
+
     try {
+
+        // 👉 STATUS ESPECIAL → salva localmente
+        if (['MANUTENCAO', 'GARAGEM', 'DISPONIVEL'].includes(driverId)) {
+
+            const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
+
+            specialStatus[vehicleId] = driverId;
+
+            localStorage.setItem('vehicleStatus', JSON.stringify(specialStatus));
+
+            renderAll();
+            return;
+        }
+
+        // 👉 Se selecionar motorista normal → limpa status especial
+        const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
+        delete specialStatus[vehicleId];
+        localStorage.setItem('vehicleStatus', JSON.stringify(specialStatus));
+
         const value = driverId === "" ? null : driverId;
+
         const { error } = await client
             .from('veiculos')
             .update({ condutor_principal_id: value })
@@ -433,11 +494,9 @@ async function updateVehicleDriver(vehicleId, driverId) {
             console.error('Erro na atualização rápida:', error.message);
             alert('Falha ao trocar condutor: ' + error.message);
         }
-        // Refresh silêncio para atualizar o status de "ocupado" nos outros selects
-        fetchVehicles();
+
     } catch (err) {
-        console.error('Erro na atualização rápida:', err);
-        alert('Falha ao trocar condutor: ' + err.message);
+        console.error(err);
     }
 }
 
@@ -455,11 +514,17 @@ function renderFullVehicles() {
     renderThead('vehicles');
 
     const searchTerm = searchInput.value.toLowerCase();
-    const filtered = vehicles.filter(v =>
-        v.placa.toLowerCase().includes(searchTerm) ||
-        v.modelo.toLowerCase().includes(searchTerm) ||
-        (v.marca && v.marca.toLowerCase().includes(searchTerm))
-    );
+
+    const filtered = vehicles.filter(v => {
+        return (
+            (v.placa || '').toLowerCase().includes(searchTerm) ||
+            (v.modelo || '').toLowerCase().includes(searchTerm) ||
+            (v.marca || '').toLowerCase().includes(searchTerm) ||
+            (v.seguradora || '').toLowerCase().includes(searchTerm) ||
+            (v.numero_apolice || '').toLowerCase().includes(searchTerm) ||
+            (v.corretor_seguro || '').toLowerCase().includes(searchTerm)
+        );
+    });
 
     const activeCols = getActiveCols('vehicles');
 
@@ -475,27 +540,27 @@ function renderFullVehicles() {
 
     list.innerHTML = filtered.map(v => {
         const cells = activeCols.map(col => {
-            switch(col.key) {
-                case 'placa':           return `<td><span class="plate">${v.placa}</span></td>`;
-                case 'marca_modelo':    return `<td>${v.marca || ''} ${v.modelo}</td>`;
-                case 'proprietario':    return `<td>${v.proprietario || '-'}</td>`;
-                case 'venc_seguro':     return `<td>${formatDate(v.vencimento_seguro)}</td>`;
-                case 'seguradora':      return `<td>${v.seguradora || '-'}</td>`;
-                case 'numero_apolice':  return `<td>${v.numero_apolice || '-'}</td>`;
-                case 'valor_premio':    return `<td>${v.valor_premio ? 'R$ ' + Number(v.valor_premio).toLocaleString('pt-BR', {minimumFractionDigits:2}) : '-'}</td>`;
-                case 'valor_franquia':  return `<td>${v.valor_franquia ? 'R$ ' + Number(v.valor_franquia).toLocaleString('pt-BR', {minimumFractionDigits:2}) : '-'}</td>`;
+            switch (col.key) {
+                case 'placa': return `<td><span class="plate">${v.placa}</span></td>`;
+                case 'marca_modelo': return `<td>${v.marca || ''} ${v.modelo}</td>`;
+                case 'proprietario': return `<td>${v.proprietario || '-'}</td>`;
+                case 'venc_seguro': return `<td>${formatDate(v.vencimento_seguro)}</td>`;
+                case 'seguradora': return `<td>${v.seguradora || '-'}</td>`;
+                case 'numero_apolice': return `<td>${v.numero_apolice || '-'}</td>`;
+                case 'valor_premio': return `<td>${v.valor_premio ? 'R$ ' + Number(v.valor_premio).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '-'}</td>`;
+                case 'valor_franquia': return `<td>${v.valor_franquia ? 'R$ ' + Number(v.valor_franquia).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '-'}</td>`;
                 case 'forma_pagamento': return `<td>${v.forma_pagamento || '-'}</td>`;
-                case 'classificacao':   return `<td>${v.classificacao || '-'}</td>`;
-                case 'status':          return `<td><span class="badge ${v.status === 'ATIVO' ? 'success' : 'danger'}">${v.status || 'ATIVO'}</span></td>`;
-                case 'cor':             return `<td>${v.cor || '-'}</td>`;
-                case 'ano_fabricacao':  return `<td>${v.ano_fabricacao || '-'}</td>`;
-                case 'ano_modelo':      return `<td>${v.ano_modelo || '-'}</td>`;
-                case 'renavam':         return `<td>${v.renavam || '-'}</td>`;
-                case 'chassi':          return `<td>${v.chassi || '-'}</td>`;
-                case 'codigo_fipe':     return `<td>${v.codigo_fipe || '-'}</td>`;
+                case 'classificacao': return `<td>${v.classificacao || '-'}</td>`;
+                case 'status': return `<td><span class="badge ${v.status === 'ATIVO' ? 'success' : 'danger'}">${v.status || 'ATIVO'}</span></td>`;
+                case 'cor': return `<td>${v.cor || '-'}</td>`;
+                case 'ano_fabricacao': return `<td>${v.ano_fabricacao || '-'}</td>`;
+                case 'ano_modelo': return `<td>${v.ano_modelo || '-'}</td>`;
+                case 'renavam': return `<td>${v.renavam || '-'}</td>`;
+                case 'chassi': return `<td>${v.chassi || '-'}</td>`;
+                case 'codigo_fipe': return `<td>${v.codigo_fipe || '-'}</td>`;
                 case 'data_aquisicao_nf': return `<td>${formatDate(v.data_aquisicao_nf)}</td>`;
-                case 'actions':         return `<td>${actionsHtml(v.id)}</td>`;
-                default:                return `<td>-</td>`;
+                case 'actions': return `<td>${actionsHtml(v.id)}</td>`;
+                default: return `<td>-</td>`;
             }
         }).join('');
         return `<tr>${cells}</tr>`;
@@ -512,7 +577,8 @@ function renderFullDrivers() {
     const searchTerm = searchInput.value.toLowerCase();
     const filtered = drivers.filter(d =>
         d.nome_completo.toLowerCase().includes(searchTerm) ||
-        (d.cpf && d.cpf.includes(searchTerm))
+        (d.cpf && d.cpf.includes(searchTerm)) ||
+        d.registro_cnh.toLowerCase().includes(searchTerm)
     );
 
     const activeCols = getActiveCols('drivers');
@@ -529,17 +595,17 @@ function renderFullDrivers() {
 
     list.innerHTML = filtered.map(d => {
         const cells = activeCols.map(col => {
-            switch(col.key) {
-                case 'nome_completo':     return `<td class="driver">${d.nome_completo}</td>`;
-                case 'cpf':              return `<td>${d.cpf || '-'}</td>`;
-                case 'cnh_cat':          return `<td>${d.registro_cnh || '-'} (${d.categoria_cnh || '-'})</td>`;
-                case 'vencimento_cnh':   return `<td>${formatDate(d.vencimento_cnh)}</td>`;
-                case 'idade':            return `<td>${calcAge(d.data_nascimento)}</td>`;
+            switch (col.key) {
+                case 'nome_completo': return `<td class="driver">${d.nome_completo}</td>`;
+                case 'cpf': return `<td>${d.cpf || '-'}</td>`;
+                case 'cnh_cat': return `<td>${d.registro_cnh || '-'} (${d.categoria_cnh || '-'})</td>`;
+                case 'vencimento_cnh': return `<td>${formatDate(d.vencimento_cnh)}</td>`;
+                case 'idade': return `<td>${calcAge(d.data_nascimento)}</td>`;
                 case 'contato_whatsapp': return `<td>${d.contato_whatsapp || '-'}</td>`;
-                case 'data_nascimento':  return `<td>${formatDate(d.data_nascimento)}</td>`;
-                case 'status':           return `<td><span class="badge ${d.status === 'ATIVO' ? 'success' : 'danger'}">${d.status}</span></td>`;
-                case 'actions':          return `<td>${actionsHtml(d.id)}</td>`;
-                default:                 return `<td>-</td>`;
+                case 'data_nascimento': return `<td>${formatDate(d.data_nascimento)}</td>`;
+                case 'status': return `<td><span class="badge ${d.status === 'ATIVO' ? 'success' : 'danger'}">${d.status}</span></td>`;
+                case 'actions': return `<td>${actionsHtml(d.id)}</td>`;
+                default: return `<td>-</td>`;
             }
         }).join('');
         return `<tr>${cells}</tr>`;
@@ -603,7 +669,7 @@ async function fetchVehicles() {
 
 function exportFleetToExcel() {
     if (vehicles.length === 0) return alert('Não há dados para exportar.');
-    
+
     // Exportar TODOS os campos cadastrados
     const exportData = vehicles.map(v => ({
         'Placa': v.placa,
@@ -644,10 +710,10 @@ function exportFleetToExcel() {
 
 function exportFleetToPDF() {
     if (vehicles.length === 0) return alert('Não há dados para exportar.');
-    
+
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-    
+
     doc.setFontSize(18);
     doc.text("Relatório Geral da Frota - VERITAS", 14, 20);
     doc.setFontSize(10);
@@ -727,7 +793,7 @@ function exportDriversToPDF() {
 
 function importFleetFromExcel(input) {
     if (!isAdmin) return alert('Modo Edição deve estar ativo para importar dados.');
-    
+
     const file = input.files[0];
     if (!file || !client) return;
 
@@ -755,7 +821,7 @@ function importFleetFromExcel(input) {
             console.log('Importando:', vehiclesToInsert);
 
             const { error } = await client.from('veiculos').upsert(vehiclesToInsert, { onConflict: 'placa' });
-            
+
             if (error) throw error;
 
             alert(`${vehiclesToInsert.length} veículos importados/atualizados com sucesso!`);
@@ -840,7 +906,7 @@ async function handleAddVehicle(e) {
     try {
         const id = document.getElementById('addVehicleId').value;
         let result;
-        
+
         if (id) {
             // Update
             result = await client.from('veiculos').update(vehicleData).eq('id', id);
@@ -915,7 +981,7 @@ async function handleAddDriver(e) {
 async function deleteVehicle(id) {
     if (!isAdmin) { alert('Ative o Modo Edição para excluir.'); return; }
     if (!confirm('Deseja realmente excluir este veículo? Esta ação não pode ser desfeita.')) return;
-    
+
     try {
         const { error } = await client.from('veiculos').delete().eq('id', id);
         if (error) throw error;
@@ -1003,21 +1069,21 @@ function editDriver(id) {
 
 // --- Modal Helpers ---
 
-function openAddModal() { 
+function openAddModal() {
     document.getElementById('vehicleModalTitle').innerText = 'Cadastrar Novo Veículo';
     document.getElementById('addVehicleId').value = '';
     addForm.reset();
-    addModal.style.display = 'flex'; 
+    addModal.style.display = 'flex';
 }
 
 function closeAddModal() { addModal.style.display = 'none'; addForm.reset(); }
 
-function openDriverModal() { 
+function openDriverModal() {
     document.getElementById('driverModalTitle').innerText = 'Cadastrar Novo Motorista';
     document.getElementById('driverId').value = '';
     driverForm.reset();
     document.getElementById('driverIdade').value = '';
-    driverModal.style.display = 'flex'; 
+    driverModal.style.display = 'flex';
 }
 function closeDriverModal() { driverModal.style.display = 'none'; driverForm.reset(); }
 function closeModal() { editModal.style.display = 'none'; } // Generic close for edit
@@ -1063,4 +1129,30 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+function clearSearch() {
+    searchInput.value = '';
+    renderAll();
+    document.getElementById('clearSearch').style.display = 'none';
+}
 
+// Mostrar/ocultar botão automaticamente
+searchInput.addEventListener('input', () => {
+    const btn = document.getElementById('clearSearch');
+    btn.style.display = searchInput.value ? 'block' : 'none';
+});
+
+function getSelectClass(value, specialStatus) {
+
+    const val = specialStatus || value;
+
+    switch (val) {
+        case 'GARAGEM':
+            return 'select-garagem';
+        case 'MANUTENCAO':
+            return 'select-manutencao';
+        case 'DISPONIVEL':
+            return 'select-disponivel';
+        default:
+            return 'select-default';
+    }
+}

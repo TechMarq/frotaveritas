@@ -32,7 +32,7 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1350px;
     margin: 0 auto;
     padding: 2rem 1rem;
 }
@@ -115,8 +115,15 @@ p.subtitle {
 }
 
 @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .search-box {
@@ -289,9 +296,11 @@ tr:hover td {
 
 /* Actions */
 .btn-edit {
-    background: rgba(79, 70, 229, 0.15); /* Fundo azul leve */
+    background: rgba(79, 70, 229, 0.15);
+    /* Fundo azul leve */
     border: 1px solid rgba(79, 70, 229, 0.2);
-    color: #818cf8; /* Azul brilhante */
+    color: #818cf8;
+    /* Azul brilhante */
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 8px;
@@ -303,12 +312,15 @@ tr:hover td {
 }
 
 .btn-delete {
-    background: rgba(239, 68, 68, 0.1) !important; /* Fundo vermelho leve */
+    background: rgba(239, 68, 68, 0.1) !important;
+    /* Fundo vermelho leve */
     border: 1px solid rgba(239, 68, 68, 0.2);
-    color: #f87171 !important; /* Vermelho claro */
+    color: #f87171 !important;
+    /* Vermelho claro */
 }
 
-.admin-active .btn-edit, .admin-active .btn-delete {
+.admin-active .btn-edit,
+.admin-active .btn-delete {
     visibility: visible;
 }
 
@@ -346,7 +358,8 @@ tr:hover td {
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.2s ease;
-    appearance: none; /* Remove a seta padrão chata */
+    appearance: none;
+    /* Remove a seta padrão chata */
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 0.8rem center;
@@ -360,7 +373,8 @@ tr:hover td {
 .direct-select:disabled {
     cursor: default;
     opacity: 0.7;
-    background-image: none; /* Remove a seta quando bloqueado */
+    background-image: none;
+    /* Remove a seta quando bloqueado */
     border-color: transparent;
     padding-left: 0;
     background: transparent;
@@ -661,7 +675,7 @@ tr:hover td {
 
 .col-chip.hidden-col {
     opacity: 0.4;
-    background: rgba(0,0,0,0.2);
+    background: rgba(0, 0, 0, 0.2);
 }
 
 .col-chip-grip {
@@ -711,4 +725,120 @@ tr:hover td {
 .btn-col-reset:hover {
     border-color: var(--primary);
     color: #818cf8;
+}
+
+.clear-btn {
+    position: absolute;
+    right: 0.8rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 16px;
+    cursor: pointer;
+    display: none;
+    transition: 0.2s;
+}
+
+.clear-btn:hover {
+    color: var(--danger);
+}
+
+.sel-default {
+    color: #999;
+}
+
+.sel-red {
+    color: #e74c3c;
+}
+
+.sel-blue {
+    color: #3498db;
+}
+
+.sel-green {
+    color: #2ecc71;
+}
+
+/* ============================= */
+/* 📌 MODAL DE DETALHES */
+/* ============================= */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+}
+
+.modal-content {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* 📱 Mobile */
+@media (max-width: 600px) {
+    .modal-content {
+        width: 95%;
+    }
+}
+
+.driver-link {
+    cursor: pointer;
+    color: #3498db;
+    font-size: 13px;
+}
+
+.driver-link:hover {
+    text-decoration: underline;
+}
+
+/* 🎨 CORES DO SELECT */
+.select-default {
+    color: #9ca3af;
+    /* cinza */
+}
+
+.select-garagem {
+    color: #3b82f6;
+    /* azul */
+}
+
+.select-manutencao {
+    color: #ef4444;
+    /* vermelho */
+}
+
+.select-disponivel {
+    color: #10b981;
+    /* verde */
+}
+
+.contact a {
+    color: #25D366;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.contact a:hover {
+    text-decoration: underline;
 }
