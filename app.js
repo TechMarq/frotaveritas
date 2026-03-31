@@ -420,9 +420,9 @@ function renderVehicles() {
         const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
         const currentSpecial = specialStatus[v.id];
         let options = '<option value="">-- Vincular Motorista --</option>';
-        options += `<option value="MANUTENCAO" ${currentSpecial === 'MANUTENCAO' ? 'selected' : ''}>Manutenção</option>`;
-        options += `<option value="GARAGEM" ${currentSpecial === 'GARAGEM' ? 'selected' : ''}>Garagem</option>`;
-        options += `<option value="DISPONIVEL" ${currentSpecial === 'DISPONIVEL' ? 'selected' : ''}>Disponível</option>`;
+        options += `<option value="manutencao" ${v.status_alocacao === 'manutencao' ? 'selected' : ''}>Veículo em Manutenção</option>`;
+        options += `<option value="garagem" ${v.status_alocacao === 'garagem' ? 'selected' : ''}>Garagem</option>`;
+        options += `<option value="disponivel" ${v.status_alocacao === 'disponivel' ? 'selected' : ''}>Disponível</option>`;
         activeDrivers.forEach(d => {
             const isOccupiedByAnother = occupiedDriverIds.includes(d.id) && d.id !== v.condutor_principal_id;
             if (!isOccupiedByAnother) {
@@ -464,35 +464,28 @@ async function updateVehicleDriver(vehicleId, driverId) {
     if (!client) return;
 
     try {
+        let updateData = {};
 
-        // 👉 STATUS ESPECIAL → salva localmente
-        if (['MANUTENCAO', 'GARAGEM', 'DISPONIVEL'].includes(driverId)) {
-
-            const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
-
-            specialStatus[vehicleId] = driverId;
-
-            localStorage.setItem('vehicleStatus', JSON.stringify(specialStatus));
-
-            renderAll();
-            return;
+        if (driverId === "garagem" || driverId === "manutencao" || driverId === "disponivel") {
+            updateData = {
+                condutor_principal_id: null,
+                status_alocacao: driverId
+            };
+        } else {
+            updateData = {
+                condutor_principal_id: driverId || null,
+                status_alocacao: null
+            };
         }
-
-        // 👉 Se selecionar motorista normal → limpa status especial
-        const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
-        delete specialStatus[vehicleId];
-        localStorage.setItem('vehicleStatus', JSON.stringify(specialStatus));
-
-        const value = driverId === "" ? null : driverId;
 
         const { error } = await client
             .from('veiculos')
-            .update({ condutor_principal_id: value })
+            .update(updateData)
             .eq('id', vehicleId);
 
         if (error) {
-            console.error('Erro na atualização rápida:', error.message);
-            alert('Falha ao trocar condutor: ' + error.message);
+            console.error(error);
+            alert('Erro ao atualizar');
         }
 
     } catch (err) {
