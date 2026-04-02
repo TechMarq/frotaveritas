@@ -1474,6 +1474,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (searchInput) {
         searchInput.addEventListener('input', () => {
+            const btn = document.getElementById('clearSearch');
+            if (btn) btn.style.display = searchInput.value ? 'flex' : 'none';
             renderAll();
         });
     }
