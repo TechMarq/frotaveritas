@@ -534,74 +534,68 @@ tr:hover td {
     color: var(--text-muted);
 }
 
-/* Responsive Table Mobile View */
-@media (max-width: 600px) {
-
-    table,
-    thead,
-    tbody,
-    th,
-    td,
-    tr {
-        display: block;
+/* General Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem 0.5rem;
     }
-
-    thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
+    
+    h1 {
+        font-size: 1.8rem;
     }
-
-    tr {
-        margin-bottom: 1rem;
-        border-bottom: 1px solid var(--border-card);
+    
+    .nav-tabs {
+        width: 100%;
+        overflow-x: auto;
+        justify-content: flex-start;
+        padding-bottom: 0.5rem;
+    }
+    
+    .tab-btn {
+        flex: 0 0 auto;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
         padding: 1rem;
     }
-
-    td {
-        border-bottom: none;
-        padding: 0.5rem 0;
-        position: relative;
-        padding-left: 50%;
+    
+    .search-box {
+        min-width: 100%;
+    }
+    
+    .admin-actions {
+        width: 100%;
+        justify-content: space-between;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-add {
+        flex: 1;
+        justify-content: center;
     }
 
-    td:before {
-        position: absolute;
-        left: 0;
-        width: 45%;
-        white-space: nowrap;
-        color: var(--text-muted);
-        font-weight: 600;
-        font-size: 0.8rem;
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
+    
+    table {
+        min-width: 600px; /* Garante que a tabela tenha um mínimo pra scrollar se necessário */
+    }
+    
+    th, td {
+        padding: 0.75rem;
+        font-size: 0.85rem;
+    }
+}
 
-    td:nth-of-type(1):before {
-        content: "PLACA";
-    }
-
-    td:nth-of-type(2):before {
-        content: "MODELO";
-    }
-
-    td:nth-of-type(3):before {
-        content: "MOTORISTA";
-    }
-
-    td:nth-of-type(4):before {
-        content: "CONTATO";
-    }
-
-    td:nth-of-type(5):before {
-        content: "AÇÃO";
-    }
-
-    .plate {
-        display: inline-block;
-    }
-
-    .btn-edit {
-        justify-content: flex-start;
-    }
+.btn-edit {
+    justify-content: flex-start;
 }
 
 /* ========================================
@@ -833,6 +827,18 @@ tr:hover td {
 @keyframes fadeInScale {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
+}
+
+/* Responsividade para Notificações */
+@media (max-width: 600px) {
+    .noti-panel {
+        right: auto;
+        left: 0;
+        width: calc(100vw - 40px);
+        min-width: 280px;
+        max-width: 350px;
+        transform-origin: top left;
+    }
 }
 
 .noti-panel.active {
