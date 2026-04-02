@@ -67,6 +67,24 @@
             </div>
 
             <div class="admin-actions">
+                <!-- Notifications Trigger -->
+                <div class="notification-wrapper">
+                    <button id="notiBtn" class="noti-btn" onclick="toggleNotiPanel()">
+                        <i data-lucide="bell"></i>
+                        <span id="notiBadge" class="noti-badge" style="display: none;">0</span>
+                    </button>
+                    <!-- Notification Panel -->
+                    <div id="notiPanel" class="noti-panel">
+                        <div class="noti-header">
+                            <h3>Notificações</h3>
+                            <button class="noti-close" onclick="toggleNotiPanel()">&times;</button>
+                        </div>
+                        <div id="notiList" class="noti-list">
+                            <div class="noti-empty">Nenhuma pendência encontrada.</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="admin-mode">
                     <i data-lucide="shield"></i>
                     <span>Modo Edição</span>

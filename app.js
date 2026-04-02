@@ -37,6 +37,11 @@ const driverSelect = document.getElementById('addCondutorPrincipalId');
 let vehicles = [];
 let drivers = [];
 let isAdmin = false;
+let currentSort = {
+    dashboard: { key: 'placa', dir: 'asc' },
+    vehicles: { key: 'placa', dir: 'asc' },
+    drivers: { key: 'nome_completo', dir: 'asc' }
+};
 
 // ============================================================
 //  COLUMN MANAGER
@@ -46,7 +51,7 @@ const COL_DEFS = {
     dashboard: [
         { key: 'placa', label: 'Placa', visible: true },
         { key: 'modelo', label: 'Modelo', visible: true },
-        { key: 'condutor', label: 'Condutor Atual', visible: true },
+        { key: 'condutor', label: 'Alocação Atual', visible: true },
         { key: 'whats', label: 'WhatsApp', visible: true },
     ],
     vehicles: [
@@ -68,6 +73,8 @@ const COL_DEFS = {
         { key: 'renavam', label: 'RENAVAM', visible: false },
         { key: 'chassi', label: 'Chassi', visible: false },
         { key: 'codigo_fipe', label: 'Cód. FIPE', visible: false },
+        { key: 'condutor_principal', label: 'Condutor Seguro', visible: true },
+        { key: 'motorista_alocado', label: 'Alocação Atual', visible: true },
         { key: 'data_aquisicao_nf', label: 'Dt. Aquisição', visible: false },
         { key: 'actions', label: 'Ações', visible: true },
     ],
@@ -77,6 +84,7 @@ const COL_DEFS = {
         { key: 'cnh_cat', label: 'CNH / Categoria', visible: true },
         { key: 'vencimento_cnh', label: 'Vencimento CNH', visible: true },
         { key: 'idade', label: 'Idade', visible: true },
+        { key: 'vinculos_seguro', label: 'Qtd. Seguros Principal', visible: true },
         { key: 'contato_whatsapp', label: 'WhatsApp', visible: false },
         { key: 'data_nascimento', label: 'Nascimento', visible: false },
         { key: 'status', label: 'Status', visible: true },
@@ -256,9 +264,33 @@ function renderThead(tab) {
     const thead = document.getElementById('thead-' + tab);
     if (!thead) return;
     const active = getActiveCols(tab);
-    thead.innerHTML = '<tr>' + active.map(c =>
-        `<th${c.key === 'actions' ? ' class="col-actions"' : ''}>${c.label}</th>`
-    ).join('') + '</tr>';
+    const sort = currentSort[tab];
+
+    thead.innerHTML = '<tr>' + active.map(c => {
+        const isSorted = sort.key === c.key;
+        const icon = isSorted ? (sort.dir === 'asc' ? 'chevron-up' : 'chevron-down') : 'chevrons-up-down';
+        const isSortable = c.key !== 'actions';
+
+        return `
+            <th ${isSortable ? `onclick="handleSort('${tab}', '${c.key}')" style="cursor:pointer; user-select:none;"` : ''} 
+                class="${isSortable ? 'sortable-header' : ''} ${isSorted ? 'active-sort' : ''} ${c.key === 'actions' ? 'col-actions' : ''}">
+                <div style="display: flex; align-items: center; gap: 0.4rem; justify-content: ${c.key === 'actions' ? 'center' : 'flex-start'}">
+                    ${c.label}
+                    ${isSortable ? `<i data-lucide="${icon}" style="width:12px; height:12px; opacity:${isSorted ? 1 : 0.4}"></i>` : ''}
+                </div>
+            </th>`;
+    }).join('') + '</tr>';
+    if (window.lucide) lucide.createIcons();
+}
+
+function handleSort(tab, key) {
+    if (currentSort[tab].key === key) {
+        currentSort[tab].dir = currentSort[tab].dir === 'asc' ? 'desc' : 'asc';
+    } else {
+        currentSort[tab].key = key;
+        currentSort[tab].dir = 'asc';
+    }
+    renderAll();
 }
 
 // --- Funções de UI ---
@@ -305,7 +337,227 @@ function renderAll() {
     renderVehicles();
     renderFullVehicles();
     renderFullDrivers();
+    checkNotifications(); // 🔔 Atualiza notificações sempre que renderizar
 }
+
+// ============================================================
+//  NOTIFICAÇÕES
+// ============================================================
+
+function toggleNotiPanel() {
+    const panel = document.getElementById('notiPanel');
+    if (panel) panel.classList.toggle('active');
+}
+
+function checkNotifications() {
+    if (!drivers.length && !vehicles.length) return;
+
+    const alerts = [];
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Considerar apenas a data
+
+    // CNH Alerts (Drivers) - 2 meses antes (60 dias aprox)
+    drivers.forEach(d => {
+        if (!d.vencimento_cnh) return;
+        const venc = new Date(d.vencimento_cnh + 'T00:00:00'); // Garantir timezone local
+        const diffTime = venc - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) {
+            alerts.push({
+                type: 'expired',
+                title: 'CNH Vencida 🔴',
+                desc: `Motorista: ${d.nome_completo}`,
+                date: formatDate(d.vencimento_cnh),
+                itemType: 'driver',
+                id: d.id
+            });
+        } else if (diffDays <= 60) {
+            alerts.push({
+                type: 'warning',
+                title: 'CNH a Vencer 🟠',
+                desc: `Motorista: ${d.nome_completo} em ${diffDays} dias`,
+                date: formatDate(d.vencimento_cnh),
+                itemType: 'driver',
+                id: d.id
+            });
+        }
+    });
+
+    // Seguro Alerts (Vehicles) - 1 mês antes (30 dias aprox)
+    vehicles.forEach(v => {
+        if (!v.vencimento_seguro) return;
+        const venc = new Date(v.vencimento_seguro + 'T00:00:00');
+        const diffTime = venc - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) {
+            alerts.push({
+                type: 'expired',
+                title: 'Seguro Vencido 🔴',
+                desc: `Veículo: ${v.placa} (${v.modelo})`,
+                date: formatDate(v.vencimento_seguro),
+                itemType: 'vehicle',
+                id: v.id
+            });
+        } else if (diffDays <= 30) {
+            alerts.push({
+                type: 'warning',
+                title: 'Seguro a Vencer 🟠',
+                desc: `Veículo: ${v.placa} em ${diffDays} dias`,
+                date: formatDate(v.vencimento_seguro),
+                itemType: 'vehicle',
+                id: v.id
+            });
+        }
+    });
+
+    updateNotiUI(alerts);
+}
+
+function updateNotiUI(alerts) {
+    const badge = document.getElementById('notiBadge');
+    const list = document.getElementById('notiList');
+    if (!badge || !list) return;
+
+    if (alerts.length > 0) {
+        badge.innerText = alerts.length;
+        badge.style.display = 'flex';
+
+        list.innerHTML = alerts.map(a => `
+            <div class="noti-item noti-type-${a.type}" onclick="focusNotiItem('${a.itemType}', '${a.id}')">
+                <div class="noti-item-title">${a.title}</div>
+                <div class="noti-item-desc">${a.desc}</div>
+                <div class="noti-date">Data: ${a.date}</div>
+            </div>
+        `).join('');
+    } else {
+        badge.style.display = 'none';
+        list.innerHTML = '<div class="noti-empty">Nenhuma pendência encontrada ✨</div>';
+    }
+}
+
+function focusNotiItem(type, id) {
+    if (type === 'driver') {
+        switchView('drivers');
+        const searchInput = document.getElementById('searchInput');
+        const driver = drivers.find(d => d.id === id);
+        if (driver && searchInput) {
+            searchInput.value = driver.nome_completo;
+            renderAll();
+        }
+    } else {
+        switchView('vehicles');
+        const searchInput = document.getElementById('searchInput');
+        const vehicle = vehicles.find(v => v.id === id);
+        if (vehicle && searchInput) {
+            searchInput.value = vehicle.placa;
+            renderAll();
+        }
+    }
+    toggleNotiPanel();
+}
+
+// ============================================================
+//  DETALHAMENTO (POP-UPS)
+// ============================================================
+
+function openVehicleDetail(id) {
+    const v = vehicles.find(item => item.id === id);
+    if (!v) return;
+
+    const modal = document.getElementById('vehicleDetailModal');
+    const content = document.getElementById('vehicleDetailContent');
+    const title = document.getElementById('vehicleDetailTitle');
+
+    if (!modal || !content || !title) return;
+
+    title.innerText = `Detalhes: ${v.placa}`;
+
+    content.innerHTML = `
+        <div class="detail-item"><strong>Marca/Modelo:</strong> ${v.marca || ''} ${v.modelo}</div>
+        <div class="detail-item"><strong>Placa:</strong> ${v.placa}</div>
+        <div class="detail-item"><strong>RENAVAM:</strong> ${v.renavam || '-'}</div>
+        <div class="detail-item"><strong>Cor:</strong> ${v.cor || '-'}</div>
+        <div class="detail-item"><strong>Ano:</strong> ${v.ano_fabricacao || '-'}/${v.ano_modelo || '-'}</div>
+        <div class="detail-item"><strong>Proprietário:</strong> ${v.proprietario || '-'}</div>
+        <div class="detail-item"><strong>Classificação:</strong> ${v.classificacao || '-'}</div>
+        <div class="detail-item"><strong>Status:</strong> <span class="badge ${v.status === 'ATIVO' ? 'success' : 'danger'}">${v.status || 'ATIVO'}</span></div>
+        
+        <div class="form-section-header">Seguro</div>
+        <div class="detail-item"><strong>Seguradora:</strong> ${v.seguradora || '-'}</div>
+        <div class="detail-item"><strong>Vencimento:</strong> ${formatDate(v.vencimento_seguro)}</div>
+        <div class="detail-item"><strong>Apólice:</strong> ${v.numero_apolice || '-'}</div>
+        <div class="detail-item"><strong>Corretor:</strong> ${v.corretor_seguro || '-'}</div>
+        
+        <div class="form-section-header">Técnico</div>
+        <div class="detail-item"><strong>Chassi:</strong> ${v.chassi || '-'}</div>
+        <div class="detail-item"><strong>Motor:</strong> ${v.numero_motor || '-'}</div>
+        <div class="detail-item"><strong>FIPE:</strong> ${v.codigo_fipe || '-'} / R$ ${Number(v.valor_fipe_mes || 0).toLocaleString('pt-BR')}</div>
+    `;
+
+    modal.style.display = 'flex';
+}
+
+function closeVehicleDetail() {
+    const modal = document.getElementById('vehicleDetailModal');
+    if (modal) modal.style.display = 'none';
+}
+
+function openDriverDetail(id) {
+    if (!id || id === 'garagem' || id === 'manutencao' || id === 'disponivel') return;
+
+    const d = drivers.find(item => item.id === id);
+    if (!d) return;
+
+    const modal = document.getElementById('driverDetailModal');
+    const content = document.getElementById('driverDetailContent');
+    const title = document.getElementById('driverDetailTitle');
+
+    if (!modal || !content || !title) return;
+
+    title.innerText = d.nome_completo;
+
+    content.innerHTML = `
+        <div class="detail-item"><strong>Nome:</strong> ${d.nome_completo}</div>
+        <div class="detail-item"><strong>CPF:</strong> ${d.cpf || '-'}</div>
+        <div class="detail-item"><strong>WhatsApp:</strong> ${d.contato_whatsapp || '-'}</div>
+        <div class="detail-item"><strong>Idade:</strong> ${calcAge(d.data_nascimento)}</div>
+        <div class="detail-item"><strong>Nascimento:</strong> ${formatDate(d.data_nascimento)}</div>
+        
+        <div class="form-section-header">Habilitação</div>
+        <div class="detail-item"><strong>Registro CNH:</strong> ${d.registro_cnh || '-'}</div>
+        <div class="detail-item"><strong>Categoria:</strong> ${d.categoria_cnh || '-'}</div>
+        <div class="detail-item"><strong>Vencimento:</strong> ${formatDate(d.vencimento_cnh)}</div>
+        
+        <div class="form-section-header">Status atual</div>
+        <div class="detail-item"><strong>Status:</strong> <span class="badge ${d.status === 'ATIVO' ? 'success' : 'danger'}">${d.status}</span></div>
+    `;
+
+    modal.style.display = 'flex';
+}
+
+function closeDriverDetail() {
+    const modal = document.getElementById('driverDetailModal');
+    if (modal) modal.style.display = 'none';
+}
+
+// Fechar painel ao clicar fora
+document.addEventListener('click', (e) => {
+    const panel = document.getElementById('notiPanel');
+    const btn = document.getElementById('notiBtn');
+    if (panel && panel.classList.contains('active') && !panel.contains(e.target) && !btn.contains(e.target)) {
+        panel.classList.remove('active');
+    }
+
+    // Também fechar modais de detalhe ao clicar no overlay
+    const vModal = document.getElementById('vehicleDetailModal');
+    const dModal = document.getElementById('driverDetailModal');
+    if (e.target === vModal) closeVehicleDetail();
+    if (e.target === dModal) closeDriverDetail();
+});
+
+
 
 function formatDate(dateStr) {
     if (!dateStr) return '-';
@@ -403,6 +655,22 @@ function renderVehicles() {
     );
 
     const activeCols = getActiveCols('dashboard');
+    const sort = currentSort.dashboard;
+
+    // Sorteia os dados filtrados
+    filtered.sort((a, b) => {
+        let valA, valB;
+        if (sort.key === 'condutor') {
+            valA = (a.motorista_alocado?.nome_completo || '').toLowerCase();
+            valB = (b.motorista_alocado?.nome_completo || '').toLowerCase();
+        } else {
+            valA = (a[sort.key] || '').toString().toLowerCase();
+            valB = (b[sort.key] || '').toString().toLowerCase();
+        }
+        if (valA < valB) return sort.dir === 'asc' ? -1 : 1;
+        if (valA > valB) return sort.dir === 'asc' ? 1 : -1;
+        return 0;
+    });
 
     if (activeVehicles.length === 0) {
         list.innerHTML = `<tr><td colspan="${activeCols.length}" style="text-align:center; padding: 2rem;">Vazio ou sem veículos ativos...</td></tr>`;
@@ -411,43 +679,55 @@ function renderVehicles() {
 
     // Descobrir quais motoristas já estão ocupados (ativos apenas)
     const occupiedDriverIds = vehicles
-        .filter(veh => veh.condutor_principal_id && veh.status === 'ATIVO')
-        .map(veh => veh.condutor_principal_id);
+        .filter(veh => veh.motorista_alocado_id && veh.status === 'ATIVO')
+        .map(veh => veh.motorista_alocado_id);
 
     const activeDrivers = drivers.filter(d => d.status === 'ATIVO');
 
     list.innerHTML = filtered.map(v => {
-        setTimeout(() => {
-            document.querySelectorAll('.direct-select').forEach(select => {
-                applySelectColor(select);
-            });
-        }, 0);
         const specialStatus = JSON.parse(localStorage.getItem('vehicleStatus')) || {};
         const currentSpecial = specialStatus[v.id];
         let options = '<option value="">-- Vincular Motorista --</option>';
-        options += `<option value="manutencao" ${v.status_alocacao === 'manutencao' ? 'selected' : ''}>Veículo em Manutenção</option>`;
-        options += `<option value="garagem" ${v.status_alocacao === 'garagem' ? 'selected' : ''}>Garagem</option>`;
-        options += `<option value="disponivel" ${v.status_alocacao === 'disponivel' ? 'selected' : ''}>Disponível</option>`;
+        options += `<option value="MANUTENCAO" ${v.status_alocacao === 'MANUTENCAO' ? 'selected' : ''}>Manutenção</option>`;
+        options += `<option value="GARAGEM" ${v.status_alocacao === 'GARAGEM' ? 'selected' : ''}>Garagem</option>`;
+        options += `<option value="DISPONIVEL" ${v.status_alocacao === 'DISPONIVEL' ? 'selected' : ''}>Disponível</option>`;
         activeDrivers.forEach(d => {
-            const isOccupiedByAnother = occupiedDriverIds.includes(d.id) && d.id !== v.condutor_principal_id;
+            const isOccupiedByAnother = occupiedDriverIds.includes(d.id) && d.id !== v.motorista_alocado_id;
             if (!isOccupiedByAnother) {
-                const isCurrent = d.id === v.condutor_principal_id;
+                const isCurrent = d.id === v.motorista_alocado_id;
                 options += `<option value="${d.id}" ${isCurrent ? 'selected' : ''}>${d.nome_completo}</option>`;
             }
         });
 
         const cells = activeCols.map(col => {
             switch (col.key) {
-                case 'placa': return `<td><span class="plate">${v.placa}</span></td>`;
+                case 'placa':
+                    return `<td><span class="plate" onclick="openVehicleDetail('${v.id}')" style="cursor: pointer; transition: transform 0.2s; display: inline-block;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">${v.placa}</span></td>`;
                 case 'modelo': return `<td>${v.modelo}</td>`;
-                case 'condutor': const selectClass = getSelectClass(v.condutor_principal_id, currentSpecial); return `<td><select class="direct-select ${selectClass}" ${isAdmin ? '' : 'disabled'} onchange="updateVehicleDriver('${v.id}', this.value); applySelectColor(this);">${options}</select></td>`;
+                case 'condutor':
+                    if (isAdmin) {
+                        const currentVal = v.motorista_alocado_id || (v.status_alocacao || '').toUpperCase();
+                        const sClass = getStatusClass(currentVal);
+                        return `<td><select class="direct-select ${sClass}" onchange="updateVehicleDriver('${v.id}', this.value); renderAll();">${options}</select></td>`;
+                    } else {
+                        const statusAloc = (v.status_alocacao || '').toUpperCase();
+                        const isMainStatus = ['GARAGEM', 'MANUTENCAO', 'DISPONIVEL'].includes(statusAloc);
+                        const driverName = v.motorista_alocado ? v.motorista_alocado.nome_completo : (isMainStatus ? statusAloc : 'DISPONÍVEL');
+                        const isClickable = !!v.motorista_alocado_id && !isMainStatus;
+                        const sClass = getStatusClass(v.motorista_alocado_id || statusAloc);
+                        
+                        return `<td>
+                            <span class="${isClickable ? 'clickable-driver' : ''} ${sClass}" 
+                                  onclick="${isClickable ? `openDriverDetail('${v.motorista_alocado_id}')` : ''}"
+                                  style="${isClickable ? 'cursor: pointer; font-weight: 600;' : 'font-weight: 600;'}">
+                                ${driverName.toUpperCase()}
+                            </span>
+                        </td>`;
+                    }
                 case 'whats':
-                    if (v.motoristas && v.motoristas.contato_whatsapp) {
-                        const raw = v.motoristas.contato_whatsapp;
-
-                        // limpa o número (remove tudo que não for número)
+                    if (v.motorista_alocado && v.motorista_alocado.contato_whatsapp) {
+                        const raw = v.motorista_alocado.contato_whatsapp;
                         const number = raw.replace(/\D/g, '');
-
                         return `
             <td class="contact">
                 <a href="https://wa.me/${number}" target="_blank">
@@ -463,6 +743,11 @@ function renderVehicles() {
 
         return `<tr data-id="${v.id}">${cells}</tr>`;
     }).join('');
+
+    // Aplica as cores nos selects após renderizar tudo
+    document.querySelectorAll('.direct-select').forEach(select => {
+        applySelectColor(select);
+    });
 }
 
 async function updateVehicleDriver(vehicleId, driverId) {
@@ -471,14 +756,14 @@ async function updateVehicleDriver(vehicleId, driverId) {
     try {
         let updateData = {};
 
-        if (driverId === "garagem" || driverId === "manutencao" || driverId === "disponivel") {
+        if (driverId === "GARAGEM" || driverId === "MANUTENCAO" || driverId === "DISPONIVEL") {
             updateData = {
-                condutor_principal_id: null,
+                motorista_alocado_id: null,
                 status_alocacao: driverId
             };
         } else {
             updateData = {
-                condutor_principal_id: driverId || null,
+                motorista_alocado_id: driverId || null,
                 status_alocacao: null
             };
         }
@@ -518,6 +803,8 @@ function renderFullVehicles() {
             (v.placa || '').toLowerCase().includes(searchTerm) ||
             (v.modelo || '').toLowerCase().includes(searchTerm) ||
             (v.marca || '').toLowerCase().includes(searchTerm) ||
+            (v.motoristas && v.motoristas.nome_completo.toLowerCase().includes(searchTerm)) ||
+            (v.motorista_alocado && v.motorista_alocado.nome_completo.toLowerCase().includes(searchTerm)) ||
             (v.seguradora || '').toLowerCase().includes(searchTerm) ||
             (v.numero_apolice || '').toLowerCase().includes(searchTerm) ||
             (v.corretor_seguro || '').toLowerCase().includes(searchTerm)
@@ -525,6 +812,29 @@ function renderFullVehicles() {
     });
 
     const activeCols = getActiveCols('vehicles');
+    const sort = currentSort.vehicles;
+
+    // Sorteia os dados filtrados
+    filtered.sort((a, b) => {
+        let valA, valB;
+        if (sort.key === 'condutor_principal') {
+            valA = (a.motoristas?.nome_completo || '').toLowerCase();
+            valB = (b.motoristas?.nome_completo || '').toLowerCase();
+        } else if (sort.key === 'motorista_alocado') {
+            valA = (a.motorista_alocado?.nome_completo || '').toLowerCase();
+            valB = (b.motorista_alocado?.nome_completo || '').toLowerCase();
+        } else if (sort.key === 'marca_modelo') {
+            valA = (a.marca || '') + (a.modelo || '');
+            valB = (b.marca || '') + (b.modelo || '');
+            valA = valA.toLowerCase(); valB = valB.toLowerCase();
+        } else {
+            valA = (a[sort.key] || '').toString().toLowerCase();
+            valB = (b[sort.key] || '').toString().toLowerCase();
+        }
+        if (valA < valB) return sort.dir === 'asc' ? -1 : 1;
+        if (valA > valB) return sort.dir === 'asc' ? 1 : -1;
+        return 0;
+    });
 
     const actionsHtml = (id) => `
         <div class="table-actions">
@@ -549,6 +859,8 @@ function renderFullVehicles() {
                 case 'valor_franquia': return `<td>${v.valor_franquia ? 'R$ ' + Number(v.valor_franquia).toLocaleString('pt-BR', { minimumFractionDigits: 2 }) : '-'}</td>`;
                 case 'forma_pagamento': return `<td>${v.forma_pagamento || '-'}</td>`;
                 case 'classificacao': return `<td>${v.classificacao || '-'}</td>`;
+                case 'condutor_principal': return `<td><span style="font-size:0.85rem; font-weight:600;">${v.motoristas ? v.motoristas.nome_completo : '-'}</span></td>`;
+                case 'motorista_alocado': return `<td><span style="font-size:0.85rem; font-weight:600; color: var(--primary);">${v.motorista_alocado ? v.motorista_alocado.nome_completo : 'DISPONÍVEL'}</span></td>`;
                 case 'status': return `<td><span class="badge ${v.status === 'ATIVO' ? 'success' : 'danger'}">${v.status || 'ATIVO'}</span></td>`;
                 case 'cor': return `<td>${v.cor || '-'}</td>`;
                 case 'ano_fabricacao': return `<td>${v.ano_fabricacao || '-'}</td>`;
@@ -580,6 +892,30 @@ function renderFullDrivers() {
     );
 
     const activeCols = getActiveCols('drivers');
+    const sort = currentSort.drivers;
+
+    // Sorteia os dados filtrados
+    filtered.sort((a, b) => {
+        let valA, valB;
+        if (sort.key === 'idade') {
+            valA = a.data_nascimento || '';
+            valB = b.data_nascimento || '';
+            // Ordem invertida para idade (data de nascimento)
+            if (valA > valB) return sort.dir === 'asc' ? -1 : 1;
+            if (valA < valB) return sort.dir === 'asc' ? 1 : -1;
+        } else if (sort.key === 'vinculos_seguro') {
+            valA = vehicles.filter(v => v.condutor_principal_id === a.id).length;
+            valB = vehicles.filter(v => v.condutor_principal_id === b.id).length;
+            if (valA < valB) return sort.dir === 'asc' ? -1 : 1;
+            if (valA > valB) return sort.dir === 'asc' ? 1 : -1;
+        } else {
+            valA = (a[sort.key] || '').toString().toLowerCase();
+            valB = (b[sort.key] || '').toString().toLowerCase();
+        }
+        if (valA < valB) return sort.dir === 'asc' ? -1 : 1;
+        if (valA > valB) return sort.dir === 'asc' ? 1 : -1;
+        return 0;
+    });
 
     const actionsHtml = (id) => `
         <div class="table-actions">
@@ -592,6 +928,9 @@ function renderFullDrivers() {
         </div>`;
 
     list.innerHTML = filtered.map(d => {
+        // Calcula vínculos de seguro manualmente para garantir que sempre funcione
+        const vinculosCount = vehicles.filter(v => v.condutor_principal_id === d.id).length;
+
         const cells = activeCols.map(col => {
             switch (col.key) {
                 case 'nome_completo': return `<td class="driver">${d.nome_completo}</td>`;
@@ -599,6 +938,7 @@ function renderFullDrivers() {
                 case 'cnh_cat': return `<td>${d.registro_cnh || '-'} (${d.categoria_cnh || '-'})</td>`;
                 case 'vencimento_cnh': return `<td>${formatDate(d.vencimento_cnh)}</td>`;
                 case 'idade': return `<td>${calcAge(d.data_nascimento)}</td>`;
+                case 'vinculos_seguro': return `<td style="font-weight:700;">${vinculosCount} veícs.</td>`;
                 case 'contato_whatsapp': return `<td>${d.contato_whatsapp || '-'}</td>`;
                 case 'data_nascimento': return `<td>${formatDate(d.data_nascimento)}</td>`;
                 case 'status': return `<td><span class="badge ${d.status === 'ATIVO' ? 'success' : 'danger'}">${d.status}</span></td>`;
@@ -628,17 +968,21 @@ async function fetchDrivers() {
     if (!client) return;
     try {
         console.log('Buscando motoristas...');
-        const { data, error } = await client.from('motoristas').select('*').order('nome_completo');
+        // Tenta buscar da View que tem o contador de seguros caso exista
+        let { data, error } = await client.from('view_motoristas_vinculos').select('*').order('nome_completo');
+        
         if (error) {
-            console.error('Erro ao buscar motoristas da tabela:', error.message);
-            throw error;
+            console.warn('View de vínculos não encontrada, tentando tabela simples...', error.message);
+            const fallback = await client.from('motoristas').select('*').order('nome_completo');
+            if (fallback.error) throw fallback.error;
+            data = fallback.data;
         }
-        drivers = data;
-        console.log('Motoristas carregados:', drivers.length);
+        
+        drivers = data || [];
         updateDriverDropdown();
         renderAll();
     } catch (err) {
-        console.error('Exceção ao buscar motoristas:', err);
+        console.error('Erro ao buscar motoristas:', err);
     }
 }
 
@@ -646,20 +990,27 @@ async function fetchVehicles() {
     if (!client) return;
     try {
         console.log('Buscando veículos...');
-        const { data, error } = await client
+        // Seleção robusta que busca tanto o seguro quanto a alocação
+        let { data, error } = await client
             .from('veiculos')
-            .select('*, motoristas(nome_completo, contato_whatsapp)')
+            .select('*, motoristas:condutor_principal_id(nome_completo, contato_whatsapp), motorista_alocado:motorista_alocado_id(nome_completo, contato_whatsapp)')
             .order('placa', { ascending: true });
 
         if (error) {
-            console.error('Erro ao buscar veículos da tabela:', error.message);
-            throw error;
+            console.warn('Novas colunas não encontradas, usando fallback...', error.message);
+            const fallback = await client
+                .from('veiculos')
+                .select('*, motoristas:condutor_principal_id(nome_completo, contato_whatsapp)')
+                .order('placa', { ascending: true });
+            
+            if (fallback.error) throw fallback.error;
+            data = fallback.data;
         }
-        vehicles = data;
-        console.log('Veículos carregados:', vehicles.length);
+
+        vehicles = data || [];
         renderAll();
     } catch (err) {
-        console.error('Exceção ao buscar veículos:', err);
+        console.error('Erro ao buscar veículos:', err);
     }
 }
 
@@ -1127,44 +1478,29 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
-function clearSearch() {
-    searchInput.value = '';
-    renderAll();
-    document.getElementById('clearSearch').style.display = 'none';
+
+function getStatusClass(val) {
+    if (!val) return '';
+    const s = val.toString().toUpperCase();
+    if (s === 'GARAGEM') return 'status-garagem';
+    if (s === 'MANUTENCAO') return 'status-manutencao';
+    if (s === 'DISPONIVEL') return 'status-disponivel';
+    // Se for um UUID (comprimento típico > 20)
+    if (s.length > 20) return 'status-vinc';
+    return '';
 }
 
-// Mostrar/ocultar botão automaticamente
-searchInput.addEventListener('input', () => {
-    const btn = document.getElementById('clearSearch');
-    btn.style.display = searchInput.value ? 'block' : 'none';
-});
-
-function getSelectClass(value, specialStatus) {
-
-    const val = specialStatus || value;
-
-    switch (val) {
-        case 'GARAGEM':
-            return 'select-garagem';
-        case 'MANUTENCAO':
-            return 'select-manutencao';
-        case 'DISPONIVEL':
-            return 'select-disponivel';
-        default:
-            return 'select-default';
-    }
-}
-
+// applySelectColor mantido para compatibilidade, mas agora usa classes CSS
 function applySelectColor(select) {
-    const value = select.value;
+    const val = select.value;
+    select.className = 'direct-select ' + getStatusClass(val);
+}
 
-    if (value === 'garagem') {
-        select.style.color = '#007bff';
-    } else if (value === 'manutencao') {
-        select.style.color = '#dc3545';
-    } else if (value === 'disponivel') {
-        select.style.color = '#28a745';
-    } else {
-        select.style.color = '#6c757d';
+function clearSearch() {
+    if (searchInput) {
+        searchInput.value = '';
+        renderAll();
+        const btn = document.getElementById('clearSearch');
+        if (btn) btn.style.display = 'none';
     }
 }
