@@ -282,10 +282,26 @@ tr:hover td {
 }
 
 /* Status Colors for Dashboard */
-.status-garagem { color: #60a5fa !important; } /* Blue */
-.status-manutencao { color: #f87171 !important; } /* Red */
-.status-disponivel { color: #4ade80 !important; } /* Green */
-.status-vinc { color: #818cf8 !important; } /* Indigo for linked drivers */
+.status-garagem {
+    color: #60a5fa !important;
+}
+
+/* Blue */
+.status-manutencao {
+    color: #f87171 !important;
+}
+
+/* Red */
+.status-disponivel {
+    color: #4ade80 !important;
+}
+
+/* Green */
+.status-vinc {
+    color: #818cf8 !important;
+}
+
+/* Indigo for linked drivers */
 
 .contact a {
     text-decoration: none;
@@ -425,7 +441,7 @@ tr:hover td {
 .modal {
     background: #1e293b;
     width: 100%;
-    max-width: 900px;
+    max-width: 1200px;
     /* Increased for complex forms */
     max-height: 90vh;
     border-radius: var(--radius);
@@ -539,41 +555,41 @@ tr:hover td {
     .container {
         padding: 1rem 0.5rem;
     }
-    
+
     h1 {
         font-size: 1.8rem;
     }
-    
+
     .nav-tabs {
         width: 100%;
         overflow-x: auto;
         justify-content: flex-start;
         padding-bottom: 0.5rem;
     }
-    
+
     .tab-btn {
         flex: 0 0 auto;
         padding: 0.6rem 1rem;
         font-size: 0.85rem;
     }
-    
+
     .controls {
         flex-direction: column;
         align-items: stretch;
         padding: 1rem;
     }
-    
+
     .search-box {
         min-width: 100%;
     }
-    
+
     .admin-actions {
         width: 100%;
         justify-content: space-between;
         gap: 0.5rem;
         flex-wrap: wrap;
     }
-    
+
     .btn-add {
         flex: 1;
         justify-content: center;
@@ -583,12 +599,14 @@ tr:hover td {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-    
+
     table {
-        min-width: 600px; /* Garante que a tabela tenha um mínimo pra scrollar se necessário */
+        min-width: 600px;
+        /* Garante que a tabela tenha um mínimo pra scrollar se necessário */
     }
-    
-    th, td {
+
+    th,
+    td {
         padding: 0.75rem;
         font-size: 0.85rem;
     }
@@ -805,7 +823,7 @@ tr:hover td {
     align-items: center;
     justify-content: center;
     border: 2px solid var(--bg-main);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
 }
 
 .noti-panel {
@@ -816,7 +834,7 @@ tr:hover td {
     background: #1e293b;
     border: 1px solid var(--border-card);
     border-radius: var(--radius);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.5);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
     padding: 0;
     z-index: 2000;
     display: none;
@@ -825,8 +843,15 @@ tr:hover td {
 }
 
 @keyframes fadeInScale {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
 /* Responsividade para Notificações */
@@ -880,7 +905,7 @@ tr:hover td {
 
 .noti-item {
     padding: 1rem 1.25rem;
-    border-bottom: 1px solid rgba(255,255,255,0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     transition: background 0.2s;
     cursor: pointer;
     display: flex;
@@ -923,8 +948,13 @@ tr:hover td {
     font-size: 0.85rem;
 }
 
-.noti-type-expired { border-left: 3px solid var(--danger); }
-.noti-type-warning { border-left: 3px solid #f59e0b; }
+.noti-type-expired {
+    border-left: 3px solid var(--danger);
+}
+
+.noti-type-warning {
+    border-left: 3px solid #f59e0b;
+}
 
 /* ========================================
    Detail Modals

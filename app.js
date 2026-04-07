@@ -648,11 +648,15 @@ function renderVehicles() {
     // Filtra apenas veículos ativos para o Dashboard de alocação
     const activeVehicles = vehicles.filter(v => (v.status === 'ATIVO' || !v.status));
 
-    const filtered = activeVehicles.filter(v =>
-        v.placa.toLowerCase().includes(searchTerm) ||
-        (v.motoristas && v.motoristas.nome_completo.toLowerCase().includes(searchTerm)) ||
-        v.modelo.toLowerCase().includes(searchTerm)
-    );
+    const filtered = activeVehicles.filter(v => {
+        const condutorAtual = v.motorista_alocado ? v.motorista_alocado.nome_completo : (v.status_alocacao || 'DISPONÍVEL');
+        return (
+            v.placa.toLowerCase().includes(searchTerm) ||
+            v.modelo.toLowerCase().includes(searchTerm) ||
+            condutorAtual.toLowerCase().includes(searchTerm) ||
+            (v.motoristas && v.motoristas.nome_completo.toLowerCase().includes(searchTerm))
+        );
+    });
 
     const activeCols = getActiveCols('dashboard');
     const sort = currentSort.dashboard;

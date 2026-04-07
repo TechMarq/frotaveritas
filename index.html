@@ -40,7 +40,9 @@
 
     <div class="container">
         <header>
-            <h1>FrotaLink</h1>
+            <a href="home.html" style="text-decoration: none; display: inline-block;">
+                <h1>FrotaLink</h1>
+            </a>
             <p class="subtitle">Gestão Integrada de Veículos e Motoristas</p>
         </header>
 
@@ -58,12 +60,17 @@
         </nav>
 
         <section class="controls">
-            <div class="search-box">
-                <i data-lucide="search"></i>
-                <input type="text" id="searchInput" placeholder="Buscar em tempo real...">
-                <button id="clearSearch" class="clear-btn" onclick="clearSearch()">
-                    ✕
-                </button>
+            <div style="display: flex; gap: 1rem; align-items: center; width: 100%; flex-wrap: wrap;">
+                <a href="home.html" class="btn" style="background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--border-card); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 8px;">
+                    <i data-lucide="layout-grid" style="width: 16px;"></i> Hub
+                </a>
+                <div class="search-box" style="flex: 1; min-width: 250px;">
+                    <i data-lucide="search"></i>
+                    <input type="text" id="searchInput" placeholder="Buscar em tempo real...">
+                    <button id="clearSearch" class="clear-btn" onclick="clearSearch()">
+                        ✕
+                    </button>
+                </div>
             </div>
 
             <div class="admin-actions">
